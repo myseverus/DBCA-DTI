@@ -13,7 +13,6 @@ This project requires the following dependencies:
 - **tqdm**  
 - **tensorboardX**  
 - **prefetch_generator**
-- **torch**
 
 # dataset
 BioSnap.txt
