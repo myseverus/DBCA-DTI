@@ -2,7 +2,7 @@
 
 # Setup and Dependencies
 
-## 🧩 Dependencies
+## Dependencies
 
 This project requires the following dependencies:
 
@@ -15,5 +15,9 @@ This project requires the following dependencies:
 - **prefetch_generator**
 - **torch**
 
-You can install them with:
+# dataset
+BioSnap.txt
+DrugBank.txt
+Celegans.txt
+human.txt
 
