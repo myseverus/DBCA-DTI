@@ -6,7 +6,6 @@ import math
 from typing import Tuple
 
 class BAGCA(nn.Module):
-    """多模态双向交叉注意力模型"""
 
     def __init__(self, hidden_size: int, heads: int, dropout: float = 0.1,      # 0.1
                  use_dynamic_alpha: bool = True, use_context_gating: bool = True):
@@ -96,7 +95,6 @@ class FixedBidirectionalCrossAttn(nn.Module):
         batch_size = drug.size(0)
         d_len, p_len = drug.size(1), protein.size(1)
 
-        # 关键修复：确保维度计算正确
         Q_d = self.q_d(drug).view(batch_size, d_len, self.n_heads, self.d_k).transpose(1, 2)
         K_p = self.k_p(protein).view(batch_size, p_len, self.n_heads, self.d_k).transpose(1, 2)
         V_p = self.v_p(protein).view(batch_size, p_len, self.n_heads, self.d_k).transpose(1, 2)
@@ -105,14 +103,11 @@ class FixedBidirectionalCrossAttn(nn.Module):
         K_d = self.k_d(drug).view(batch_size, d_len, self.n_heads, self.d_k).transpose(1, 2)
         V_d = self.v_d(drug).view(batch_size, d_len, self.n_heads, self.d_k).transpose(1, 2)
 
-        # 计算双向注意力分数
         attn_dp = torch.matmul(Q_d, K_p.transpose(-2, -1)) / math.sqrt(self.d_k)  # [bs, heads, d_len, p_len]
         attn_pd = torch.matmul(Q_p, K_d.transpose(-2, -1)) / math.sqrt(self.d_k)  # [bs, heads, p_len, d_len]
 
-        # 维度统一处理：将attn_pd转置以匹配attn_dp的维度
         attn_pd = attn_pd.transpose(2, 3)  # [bs, heads, d_len, p_len]
 
-        # 动态权重融合注意力矩阵
         if self.use_dynamic_alpha:
             alpha = torch.sigmoid(self.alpha)
             attn_matrix = alpha * attn_dp + (1 - alpha) * attn_pd
@@ -122,11 +117,9 @@ class FixedBidirectionalCrossAttn(nn.Module):
         attn_matrix = self.attn_dropout(F.softmax(attn_matrix, dim=-1)) # [16,8,100,1200]
         # attn_matrix = F.softmax(attn_matrix, dim=-1)
 
-        # 计算上下文向量
         context_d = torch.matmul(attn_matrix, V_p)  # [bs, heads, d_len, d_k]
         context_p = torch.matmul(attn_matrix.transpose(-2, -1), V_d)  # [bs, heads, p_len, d_k]
 
-        # 重塑回原始维度
         context_d = context_d.transpose(1, 2).contiguous().view(batch_size, d_len, self.hid_dim)
         context_p = context_p.transpose(1, 2).contiguous().view(batch_size, p_len, self.hid_dim)
 
