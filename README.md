@@ -13,6 +13,7 @@ This project requires the following dependencies:
 - **tqdm**  
 - **tensorboardX**  
 - **prefetch_generator**
+- **torch**
 
 You can install them with:
 
