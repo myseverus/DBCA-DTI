@@ -107,9 +107,6 @@ class Tester(object):
                 data = (molecule_words, molecule_atoms, molecule_adjs, molecule_edges, proteins, sequences, smiles, labels, _)
                 # print(self.model(data, train=False))
                 correct_labels, ys1, ys2, ys3 = self.model(data, train=False)
-                # correct_labels, ys1, ys2, ys3,DTI_t_sne,dti1d_feature,dti2d_feature = self.model(data, train=False)
-                # correct_labels, ys1 = self.model(data, train=False)
-
                 correct_labels = correct_labels.to('cpu').data.numpy()
                 ys1 = ys1.to('cpu').data.numpy()
                 ys2 = ys2.to('cpu').data.numpy()
